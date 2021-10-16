@@ -127,11 +127,18 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
                 Intake.setPower(0);
             }
             if(gamepad1.y){
-                Intake.setPower(1) ;
+                Shooter.setPower(1) ;
             }else if(gamepad1.x){
-                Intake.setPower(-1);
+                Shooter.setPower(-1);
             }else{
-                Intake.setPower(0);
+                Shooter.setPower(0);
+            }
+            if(gamepad1.dpad_up){
+                Feeder.setPower(1) ;
+            }else if(gamepad1.dpad_down){
+                Feeder.setPower(-1);
+            }else{
+                Feeder.setPower(0);
             }
 
             // Tank Mode uses one stick to control each wheel.
