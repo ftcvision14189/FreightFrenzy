@@ -80,7 +80,9 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
         backRightDrive = hardwareMap.get(DcMotor.class, "dtBR");
         frontLeftDrive = hardwareMap.get(DcMotor.class, "dtFL");
         frontRightDrive = hardwareMap.get(DcMotor.class, "dtFR");
-
+        Shooter = hardwareMap.get(DcMotor.class,"Shooter" );
+        Feeder = hardwareMap.get(DcMotor.class,"Feeder");
+        Intake = hardwareMap.get(DcMotor.class, "Intake");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -117,7 +119,20 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
             }
                 leftPower = Range.clip(drive + turn, -1.0, 1.0);
                 rightPower = Range.clip(drive - turn, -1.0, 1.0);
-
+            if(gamepad1.a){
+                Intake.setPower(1) ;
+            }else if(gamepad1.b){
+                Intake.setPower(-1);
+            }else{
+                Intake.setPower(0);
+            }
+            if(gamepad1.y){
+                Intake.setPower(1) ;
+            }else if(gamepad1.x){
+                Intake.setPower(-1);
+            }else{
+                Intake.setPower(0);
+            }
 
             // Tank Mode uses one stick to control each wheel.
             // - This requires no math, but it is hard to drive forward slowly and keep straight.
