@@ -102,25 +102,33 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
             double leftPower;
             double rightPower;
 
+            //Start Timer to calculate DeltaTime, or the time since last frame
+            long startTimer = System.currentTimeMillis();
+
             // Choose to drive using either Tank Mode, or POV Mode
             // Comment out the method that's not used.  The default below is POV.
 
             // POV Mode uses left stick to go forward, and right stick to turn.
             // - This uses basic math to combine motions and is easier to drive straight.
-            if(gamepad1.right_bumper) {
+            if(gamepad1.left_stick_button) {
                 DtDirection = !DtDirection;
             }
             if(DtDirection) {
-                 drive = -gamepad1.left_stick_y;
-                 turn = -gamepad1.right_stick_x;
+                 drive = -gamepad1.left_trigger + gamepad1.right_trigger;
+                 turn = -gamepad1.right_stick_x/1.5;
             }else{
-                 drive = gamepad1.left_stick_y;
-                 turn = -gamepad1.right_stick_x;
+                 drive = -gamepad1.right_trigger + gamepad1.left_trigger;
+                 turn = -gamepad1.right_stick_x/1.5;
             }
                 leftPower = Range.clip(drive + turn, -1.0, 1.0);
                 rightPower = Range.clip(drive - turn, -1.0, 1.0);
+
+            long endTimer = System.currentTimeMillis() - startTimer;
+            float deltaSeconds = endTimer / 1000.0f;
+
             if(gamepad1.a){
-                Intake.setPower(1) ;
+                //Intake.setPower(1);
+                Intake.setPower(deltaSeconds*1);
             }else if(gamepad1.b){
                 Intake.setPower(-1);
             }else{
@@ -148,10 +156,10 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
 
             // Send calculated power to wheels
 
-            backLeftDrive.setPower(leftPower);
-            backRightDrive.setPower(rightPower);
-            frontLeftDrive.setPower(leftPower);
-            frontRightDrive.setPower(rightPower);
+            backLeftDrive.setPower(java.lang.Math.pow(leftPower, 1));
+            backRightDrive.setPower(java.lang.Math.pow(rightPower,1));
+            frontLeftDrive.setPower(java.lang.Math.pow(leftPower,1));
+            frontRightDrive.setPower(java.lang.Math.pow(rightPower,1));
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
