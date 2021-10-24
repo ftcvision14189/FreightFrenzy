@@ -127,8 +127,8 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
             float deltaSeconds = endTimer / 1000.0f;
 
             if(gamepad1.a){
-                //Intake.setPower(1);
-                Intake.setPower(deltaSeconds*1);
+                Intake.setPower(1);
+                //Intake.setPower(deltaSeconds*1);
             }else if(gamepad1.b){
                 Intake.setPower(-1);
             }else{
