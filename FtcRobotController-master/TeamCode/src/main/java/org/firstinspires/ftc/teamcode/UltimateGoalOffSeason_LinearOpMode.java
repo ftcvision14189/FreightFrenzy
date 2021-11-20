@@ -29,7 +29,6 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -50,21 +49,22 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="FreightFrenzy_LinearOpMode", group="Linear Opmode")
+@TeleOp(name="UltimateGoalOffSeason_LinearOpMode", group="Linear Opmode")
 //@Disabled
-public class FreightFrenzy_LinearOpMode extends LinearOpMode {
+public class UltimateGoalOffSeason_LinearOpMode extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    boolean DtDirection = true;
+    boolean DtDirection;
     double drive;
     double turn;
     private DcMotor backLeftDrive = null;
     private DcMotor backRightDrive = null;
     private DcMotor frontLeftDrive = null;
     private DcMotor frontRightDrive = null;
+    private DcMotor Shooter = null;
     private DcMotor Feeder = null;
-    private DcMotor Carousel = null;
+    private DcMotor Intake = null;
 
     @Override
     public void runOpMode() {
@@ -79,8 +79,9 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
         backRightDrive = hardwareMap.get(DcMotor.class, "dtBR");
         frontLeftDrive = hardwareMap.get(DcMotor.class, "dtFL");
         frontRightDrive = hardwareMap.get(DcMotor.class, "dtFR");
+        Shooter = hardwareMap.get(DcMotor.class,"Shooter" );
         Feeder = hardwareMap.get(DcMotor.class,"Feeder");
-        Carousel = hardwareMap.get(DcMotor.class, "Color Wheel");
+        Intake = hardwareMap.get(DcMotor.class, "Intake");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
@@ -101,7 +102,7 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
             double rightPower;
 
             //Start Timer to calculate DeltaTime, or the time since last frame
-            //long startTimer = System.currentTimeMillis();
+            long startTimer = System.currentTimeMillis();
 
             // Choose to drive using either Tank Mode, or POV Mode
             // Comment out the method that's not used.  The default below is POV.
@@ -112,25 +113,32 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
                 DtDirection = !DtDirection;
             }
             if(DtDirection) {
-                 drive = (-gamepad1.left_trigger + gamepad1.right_trigger)*0.8f;
+                 drive = -gamepad1.left_trigger + gamepad1.right_trigger;
                  turn = -gamepad1.right_stick_x/1.5;
             }else{
-                 drive = (-gamepad1.right_trigger + gamepad1.left_trigger)*0.8f;
+                 drive = -gamepad1.right_trigger + gamepad1.left_trigger;
                  turn = -gamepad1.right_stick_x/1.5;
             }
                 leftPower = Range.clip(drive + turn, -1.0, 1.0);
                 rightPower = Range.clip(drive - turn, -1.0, 1.0);
 
-            //long endTimer = System.currentTimeMillis() - startTimer;
-            //float deltaSeconds = endTimer / 1000.0f;
+            long endTimer = System.currentTimeMillis() - startTimer;
+            float deltaSeconds = endTimer / 1000.0f;
 
             if(gamepad1.a){
-                Carousel.setPower(1);
-                //Carousel.setPower(deltaSeconds*1);
+                Intake.setPower(1);
+                //Intake.setPower(deltaSeconds*1);
             }else if(gamepad1.b){
-                Carousel.setPower(-1);
+                Intake.setPower(-1);
             }else{
-                Carousel.setPower(0);
+                Intake.setPower(0);
+            }
+            if(gamepad1.y){
+                Shooter.setPower(1) ;
+            }else if(gamepad1.x){
+                Shooter.setPower(-1);
+            }else{
+                Shooter.setPower(0);
             }
             if(gamepad1.dpad_up){
                 Feeder.setPower(1) ;
@@ -147,10 +155,10 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
 
             // Send calculated power to wheels
 
-            backLeftDrive.setPower(java.lang.Math.pow(leftPower, 1));
-            backRightDrive.setPower(java.lang.Math.pow(rightPower,1));
-            frontLeftDrive.setPower(java.lang.Math.pow(leftPower,1));
-            frontRightDrive.setPower(java.lang.Math.pow(rightPower,1));
+            backLeftDrive.setPower(Math.pow(leftPower, 1));
+            backRightDrive.setPower(Math.pow(rightPower,1));
+            frontLeftDrive.setPower(Math.pow(leftPower,1));
+            frontRightDrive.setPower(Math.pow(rightPower,1));
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
