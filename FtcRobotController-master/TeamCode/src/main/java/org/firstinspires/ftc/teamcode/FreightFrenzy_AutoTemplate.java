@@ -127,14 +127,14 @@ public class FreightFrenzy_AutoTemplate extends LinearOpMode{
         telemetry.addLine()
                 .addData("heading", new Func<String>() {
                     @Override public String value() {
-                        return(toString().valueOf(angles.firstAngle));
+                        return(toString().valueOf(angles.secondAngle));
                     }
                 });
 
         do{
             angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             telemetry.update();
-        }while(angles.firstAngle >= (endAngle) && opModeIsActive());
+        }while(angles.secondAngle >= (endAngle) && opModeIsActive());
 
         frontLeftDrive.setPower(0);
         frontRightDrive.setPower(0);
@@ -153,9 +153,9 @@ public class FreightFrenzy_AutoTemplate extends LinearOpMode{
         sleep((long)(500-(power*50)));
 
         telemetry.addLine()
-                .addData("heading", new Func<String>() {
+                .addData("Roll", new Func<String>() {
                     @Override public String value() {
-                        return(toString().valueOf(angles.firstAngle));
+                        return(toString().valueOf(angles.secondAngle));
                     }
                 });
 
@@ -172,7 +172,7 @@ public class FreightFrenzy_AutoTemplate extends LinearOpMode{
 
     void gyroTurn(float power, float degrees, String direction) {
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        float startAngle = angles.firstAngle;
+        float startAngle = angles.secondAngle;
         float travelAngle = degrees;
         if(direction.equals("Right")){
             float endAngle = startAngle - travelAngle;
@@ -185,7 +185,7 @@ public class FreightFrenzy_AutoTemplate extends LinearOpMode{
             }
 
         }else if(direction.equals("Left")){
-            float endAngle = angles.firstAngle + degrees;
+            float endAngle = angles.secondAngle + degrees;
             if (abs(endAngle) >= 180){
                 gyroTurnLeft(power,178);
                 gyroTurnLeft(power, (endAngle - 360));
