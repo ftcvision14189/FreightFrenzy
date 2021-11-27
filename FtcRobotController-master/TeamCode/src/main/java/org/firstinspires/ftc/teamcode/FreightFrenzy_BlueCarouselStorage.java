@@ -242,6 +242,9 @@ public class FreightFrenzy_BlueCarouselStorage extends LinearOpMode{
         //sleep(4000);
         //driveF(-motorPower, 20);
         driveTime(-motorPower, 0.617f + secOffset);
+        Feeder.setPower(.5);
+        sleep(3000);
+        Feeder.setPower(0);
     }
 }
 

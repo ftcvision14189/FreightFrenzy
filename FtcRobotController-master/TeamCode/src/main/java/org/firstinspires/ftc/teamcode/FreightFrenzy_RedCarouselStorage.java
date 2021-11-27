@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-@Autonomous(name="BlueCarouselStorage", group="Auto")
+@Autonomous(name="RedCarouselStorage", group="Auto")
 
 public class FreightFrenzy_RedCarouselStorage extends LinearOpMode{
     BNO055IMU imu;
@@ -231,7 +231,7 @@ public class FreightFrenzy_RedCarouselStorage extends LinearOpMode{
         //sleep(4000);
         //driveF(motorPower, 13);
         driveTime(motorPower, 0.401f + secOffset);
-        Carousel.setPower(1);
+        Carousel.setPower(-1);
         motorPower(0.1f);
         sleep(4000);
         motorPower(0.0f);
@@ -242,6 +242,9 @@ public class FreightFrenzy_RedCarouselStorage extends LinearOpMode{
         //sleep(4000);
         //driveF(-motorPower, 20);
         driveTime(-motorPower, 0.617f + secOffset);
+        Feeder.setPower(.5);
+        sleep(3000);
+        Feeder.setPower(0);
     }
 }
 
