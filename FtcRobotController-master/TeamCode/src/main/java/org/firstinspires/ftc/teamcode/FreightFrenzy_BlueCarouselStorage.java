@@ -1,11 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+
 import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -14,9 +15,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import static java.lang.Math.abs;
 
-@Autonomous(name="Test Auto", group="Auto")
+@Autonomous(name="BlueCarouselStorage", group="Auto")
 
-public class FreightFrenzy_AutoTemplate extends LinearOpMode{
+public class FreightFrenzy_BlueCarouselStorage extends LinearOpMode{
     BNO055IMU imu;
     private DcMotor backLeftDrive = null;
     private DcMotor backRightDrive = null;
@@ -199,33 +200,16 @@ public class FreightFrenzy_AutoTemplate extends LinearOpMode{
 
         waitForStart();
 
-        // Turn right
-        /*driveR(0.5f, 45);
-        sleep(1000);
-        driveR(0.5f, 90);
-        sleep(1000);
-        driveR(0.5f, 360);
-        sleep(1000);
-        driveR(1.0f, 90);*/
-
-        //gyroTurn(0.5f, 90, "Right");
-        //sleep(1000);
-        //gyroTurn(0.5f, 90, "Left");
-        //sleep(1000);
-        //gyroTurn(0.5f, 90, "Left");
-        sleep(1000);
-        //gyroTurn(0.5f, 35, "Left");
-        //sleep(1000);
-        //gyroTurn(0.5f, 180, "Left");
-        //sleep(1000);
-        //gyroTurn(0.5f, 100, "Left");
-        /*gyroTurnLeft(.3f, 90);
-        sleep(1000);
-        gyroTurnLeft(.3f, 178);
-        sleep(1000);
-        gyroTurnLeft(.3f, -90);
-        sleep(1000);*/
-        driveF(0.5f, 12);
+        driveF(0.05f, 12);
+        gyroTurn(0.05f, 90, "right");
+        driveF(0.05f, 30);
+        gyroTurn(0.05f, 45, "right");
+        driveF(0.05f, 6);
+        Carousel.setPower(1);
+        sleep(5000);
+        Carousel.setPower(0);
+        gyroTurn(0.05f, 45, "right");
+        driveF(-0.05f, 24);
 
 
     }

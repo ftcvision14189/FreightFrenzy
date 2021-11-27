@@ -112,7 +112,7 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
                 DtDirection = !DtDirection;
             }
             if(DtDirection) {
-                 drive = (-gamepad1.left_trigger + gamepad1.right_trigger)*0.8f;
+                 drive = (gamepad1.left_trigger - gamepad1.right_trigger)*0.8f;
                  turn = -gamepad1.right_stick_x/1.5;
             }else{
                  drive = (-gamepad1.right_trigger + gamepad1.left_trigger)*0.8f;
