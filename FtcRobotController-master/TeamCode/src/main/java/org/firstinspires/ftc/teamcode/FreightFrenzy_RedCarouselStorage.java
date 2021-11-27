@@ -1,22 +1,23 @@
 package org.firstinspires.ftc.teamcode;
 
+import static java.lang.Math.abs;
+
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+
 import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-import static java.lang.Math.abs;
+@Autonomous(name="BlueCarouselStorage", group="Auto")
 
-@Autonomous(name="Test Auto", group="Auto")
-
-public class FreightFrenzy_AutoTemplate extends LinearOpMode{
+public class FreightFrenzy_RedCarouselStorage extends LinearOpMode{
     BNO055IMU imu;
     private DcMotor backLeftDrive = null;
     private DcMotor backRightDrive = null;
@@ -68,15 +69,31 @@ public class FreightFrenzy_AutoTemplate extends LinearOpMode{
         backRightDrive.setPower(power);
     }
 
+    void driveTime(float power, float timeInSeconds) {
+        motorPower(power);
+        sleep((int)(timeInSeconds * 1000));
+        if (power > 0) {
+            motorPower(-0.01f);
+        } else if (power < 0) {
+            motorPower(0.01f);
+        } else {
+            // do nothing because power is already 0
+        }
+        sleep(500);
+        motorPower(0);
+    }
+
     void driveF(float power, int inches){ // Drive Forward
         resetMotors();
         motorPower(power);
-        int distance = inchesToEncoder(inches);
+        /*int distance = inchesToEncoder(inches);
         frontLeftDrive.setTargetPosition(distance);
         frontRightDrive.setTargetPosition(distance);
         backLeftDrive.setTargetPosition(distance);
-        backRightDrive.setTargetPosition(distance);
-        motorMove();
+        backRightDrive.setTargetPosition(distance);*/
+        float inchesToTime = (float)(inches/32.42f);
+        driveTime(power, inchesToTime);
+        //motorMove();
     }
 
     void gyroTurnRight (float power, float endAngle) {
@@ -87,7 +104,7 @@ public class FreightFrenzy_AutoTemplate extends LinearOpMode{
         backLeftDrive.setPower(power);
         backRightDrive.setPower(-power);
 
-        sleep((long)(500-(power*50)));
+        sleep((long)(500 - (power * 30)));
 
         telemetry.addLine()
                 .addData("roll", new Func<String>() {
@@ -111,7 +128,7 @@ public class FreightFrenzy_AutoTemplate extends LinearOpMode{
         do{
             angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             telemetry.update();
-        }while(angles.secondAngle >= (endAngle) && opModeIsActive());
+        }while(angles.firstAngle >= (endAngle) && opModeIsActive());
 
         frontLeftDrive.setPower(0);
         frontRightDrive.setPower(0);
@@ -130,16 +147,15 @@ public class FreightFrenzy_AutoTemplate extends LinearOpMode{
         sleep((long)(500-(power*50)));
 
         telemetry.addLine()
-                .addData("Roll", new Func<String>() {
+                .addData("Heading", new Func<String>() {
                     @Override public String value() {
-                        return(toString().valueOf(angles.secondAngle));
+                        return(toString().valueOf(angles.firstAngle));
                     }
                 });
-
         do{
             angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             telemetry.update();
-        }while(angles.secondAngle <= (endAngle) && opModeIsActive());
+        }while(angles.firstAngle <= (endAngle) && opModeIsActive());
 
         frontLeftDrive.setPower(0);
         frontRightDrive.setPower(0);
@@ -149,20 +165,20 @@ public class FreightFrenzy_AutoTemplate extends LinearOpMode{
 
     void gyroTurn(float power, float degrees, String direction) {
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        float startAngle = angles.secondAngle;
+        float startAngle = angles.firstAngle;
         float travelAngle = degrees;
         if(direction.equals("Right")){
             float endAngle = startAngle - travelAngle;
             if (abs(endAngle) >= 180){
                 gyroTurnRight(power,-178);
-                gyroTurnRight(power, (endAngle+360));
+                gyroTurnRight(power, (endAngle + 360));
             }
             else if (0 < abs(endAngle)) {
                 gyroTurnRight(power, endAngle);
             }
 
         }else if(direction.equals("Left")){
-            float endAngle = angles.secondAngle + degrees;
+            float endAngle = angles.firstAngle + degrees;
             if (abs(endAngle) >= 180){
                 gyroTurnLeft(power,178);
                 gyroTurnLeft(power, (endAngle - 360));
@@ -186,6 +202,8 @@ public class FreightFrenzy_AutoTemplate extends LinearOpMode{
         frontLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeftDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         imu = hardwareMap.get(BNO055IMU.class, "imu");
+        float motorPower = 0.5f;
+        float secOffset = 0.031f;
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
@@ -199,35 +217,31 @@ public class FreightFrenzy_AutoTemplate extends LinearOpMode{
 
         waitForStart();
 
-        // Turn right
-        /*driveR(0.5f, 45);
-        sleep(1000);
-        driveR(0.5f, 90);
-        sleep(1000);
-        driveR(0.5f, 360);
-        sleep(1000);
-        driveR(1.0f, 90);*/
+        //driveTime(motorPower, 0.185f);
 
-        //gyroTurn(0.5f, 90, "Right");
-        //sleep(1000);
-        //gyroTurn(0.5f, 90, "Left");
-        //sleep(1000);
-        //gyroTurn(0.5f, 90, "Left");
-        //sleep(1000);
-        //gyroTurn(0.5f, 35, "Left");
-        //sleep(1000);
-        //gyroTurn(0.5f, 180, "Left");
-        //sleep(1000);
-        //gyroTurn(0.5f, 100, "Left");
-        /*gyroTurnLeft(.3f, 90);
-        sleep(1000);
-        gyroTurnLeft(.3f, 178);
-        sleep(1000);
-        gyroTurnLeft(.3f, -90);
-        sleep(1000);*/
-        driveF(0.5f, 12);
+        //driveF(motorPower, 6);
 
-
+        //driveF(motorPower, 12);
+        driveTime(motorPower, 0.370f + secOffset);
+        gyroTurn(motorPower * 0.75f, 82, "Left");
+        //sleep(4000);
+        //driveF(motorPower, 18);
+        driveTime(motorPower, 0.555f + secOffset);
+        gyroTurn(motorPower * 0.75f, 45, "Left");
+        //sleep(4000);
+        //driveF(motorPower, 13);
+        driveTime(motorPower, 0.401f + secOffset);
+        Carousel.setPower(1);
+        motorPower(0.1f);
+        sleep(4000);
+        motorPower(0.0f);
+        Carousel.setPower(0);
+        //drive(-motorPower, 6);
+        driveTime(-motorPower, 0.185f +secOffset);
+        gyroTurn(motorPower * 0.75f, 28, "Left");
+        //sleep(4000);
+        //driveF(-motorPower, 20);
+        driveTime(-motorPower, 0.617f + secOffset);
     }
 }
 
