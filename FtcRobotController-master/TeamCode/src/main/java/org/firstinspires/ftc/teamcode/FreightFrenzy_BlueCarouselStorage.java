@@ -217,33 +217,27 @@ public class FreightFrenzy_BlueCarouselStorage extends LinearOpMode{
 
         waitForStart();
 
-        //driveTime(motorPower, 0.185f);
+        // FORMULA for timInSeconds to Inches :
+        // inches / 32.42 = timeInSeconds
+        // Round to the nearest thousandth
 
-        //driveF(motorPower, 6);
-
-        //driveF(motorPower, 12);
-        driveTime(motorPower, 0.370f + secOffset);
-        gyroTurn(motorPower * 0.75f, 82, "Right");
-        //sleep(4000);
-        //driveF(motorPower, 18);
-        driveTime(motorPower, 0.555f + secOffset);
+        driveTime(motorPower, 0.370f + secOffset); // 12 in
+        gyroTurn(motorPower * 0.75f, 83, "Right");
+        driveTime(motorPower, 0.555f + secOffset); // 18 in
         gyroTurn(motorPower * 0.75f, 45, "Right");
-        //sleep(4000);
-        //driveF(motorPower, 13);
-        driveTime(motorPower, 0.401f + secOffset);
+        driveTime(motorPower, 0.401f + secOffset); // 13 in
         Carousel.setPower(1);
         motorPower(0.1f);
         sleep(4000);
         motorPower(0.0f);
         Carousel.setPower(0);
-        //drive(-motorPower, 6);
-        driveTime(-motorPower, 0.185f +secOffset);
+        driveTime(-motorPower, 0.185f + secOffset); // 6 in
         gyroTurn(motorPower * 0.75f, 28, "Right");
-        //sleep(4000);
-        //driveF(-motorPower, 20);
-        driveTime(-motorPower, 0.617f + secOffset);
-        Feeder.setPower(.5);
-        sleep(3000);
+        driveTime(-motorPower, 0.648f + secOffset); // 21 in
+        gyroTurn(motorPower * 0.75f, 170, "Left");
+        driveTime(-motorPower, 0.185f + secOffset); // 6 in
+        Feeder.setPower(-.5);
+        sleep(4000);
         Feeder.setPower(0);
     }
 }

@@ -50,22 +50,18 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="UltimateGoalOffSeason_LinearOpMode", group="Linear Opmode")
-@Disabled
-public class UltimateGoalOffSeason_LinearOpMode extends LinearOpMode {
+@TeleOp(name="UltimateGoalPractice_LinearOpMode", group="Linear Opmode")
+//Disabled
+public class UltimateGoalPractice_LinearOpMode extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    boolean DtDirection;
+    boolean DtDirection = true;
     double drive;
     double turn;
-    private DcMotor backLeftDrive = null;
-    private DcMotor backRightDrive = null;
-    private DcMotor frontLeftDrive = null;
-    private DcMotor frontRightDrive = null;
-    private DcMotor Shooter = null;
-    private DcMotor Feeder = null;
-    private DcMotor Intake = null;
+    private DcMotor leftDrive = null;
+    private DcMotor rightDrive = null;
+    private DcMotor shooter = null;
 
     @Override
     public void runOpMode() {
@@ -76,20 +72,14 @@ public class UltimateGoalOffSeason_LinearOpMode extends LinearOpMode {
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
 
-        backLeftDrive = hardwareMap.get(DcMotor.class, "dtBL");
-        backRightDrive = hardwareMap.get(DcMotor.class, "dtBR");
-        frontLeftDrive = hardwareMap.get(DcMotor.class, "dtFL");
-        frontRightDrive = hardwareMap.get(DcMotor.class, "dtFR");
-        Shooter = hardwareMap.get(DcMotor.class,"Shooter" );
-        Feeder = hardwareMap.get(DcMotor.class,"Feeder");
-        Intake = hardwareMap.get(DcMotor.class, "Intake");
+        leftDrive = hardwareMap.get(DcMotor.class, "dtL");
+        rightDrive = hardwareMap.get(DcMotor.class, "dtR");
+        shooter = hardwareMap.get(DcMotor.class,"Feeder");
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
-        backRightDrive.setDirection(DcMotor.Direction.REVERSE);
-        frontLeftDrive.setDirection(DcMotor.Direction.FORWARD);
-        frontRightDrive.setDirection(DcMotor.Direction.REVERSE);
+        leftDrive.setDirection(DcMotor.Direction.FORWARD);
+        rightDrive.setDirection(DcMotor.Direction.REVERSE);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -103,7 +93,7 @@ public class UltimateGoalOffSeason_LinearOpMode extends LinearOpMode {
             double rightPower;
 
             //Start Timer to calculate DeltaTime, or the time since last frame
-            long startTimer = System.currentTimeMillis();
+            //long startTimer = System.currentTimeMillis();
 
             // Choose to drive using either Tank Mode, or POV Mode
             // Comment out the method that's not used.  The default below is POV.
@@ -114,40 +104,27 @@ public class UltimateGoalOffSeason_LinearOpMode extends LinearOpMode {
                 DtDirection = !DtDirection;
             }
             if(DtDirection) {
-                 drive = -gamepad1.left_trigger + gamepad1.right_trigger;
+                 drive = (gamepad1.left_trigger - gamepad1.right_trigger)*0.8f;
                  turn = -gamepad1.right_stick_x/1.5;
             }else{
-                 drive = -gamepad1.right_trigger + gamepad1.left_trigger;
+                 drive = (-gamepad1.right_trigger + gamepad1.left_trigger)*0.8f;
                  turn = -gamepad1.right_stick_x/1.5;
             }
                 leftPower = Range.clip(drive + turn, -1.0, 1.0);
                 rightPower = Range.clip(drive - turn, -1.0, 1.0);
 
-            long endTimer = System.currentTimeMillis() - startTimer;
-            float deltaSeconds = endTimer / 1000.0f;
+            //long endTimer = System.currentTimeMillis() - startTimer;
+            //float deltaSeconds = endTimer / 1000.0f;
 
             if(gamepad1.a){
-                Intake.setPower(1);
-                //Intake.setPower(deltaSeconds*1);
+                shooter.setPower(1);
+                //Carousel.setPower(deltaSeconds*1);
             }else if(gamepad1.b){
-                Intake.setPower(-1);
+                shooter.setPower(-1);
             }else{
-                Intake.setPower(0);
+                shooter.setPower(0);
             }
-            if(gamepad1.y){
-                Shooter.setPower(1) ;
-            }else if(gamepad1.x){
-                Shooter.setPower(-1);
-            }else{
-                Shooter.setPower(0);
-            }
-            if(gamepad1.dpad_up){
-                Feeder.setPower(1) ;
-            }else if(gamepad1.dpad_down){
-                Feeder.setPower(-1);
-            }else{
-                Feeder.setPower(0);
-            }
+
 
             // Tank Mode uses one stick to control each wheel.
             // - This requires no math, but it is hard to drive forward slowly and keep straight.
@@ -156,10 +133,8 @@ public class UltimateGoalOffSeason_LinearOpMode extends LinearOpMode {
 
             // Send calculated power to wheels
 
-            backLeftDrive.setPower(Math.pow(leftPower, 1));
-            backRightDrive.setPower(Math.pow(rightPower,1));
-            frontLeftDrive.setPower(Math.pow(leftPower,1));
-            frontRightDrive.setPower(Math.pow(rightPower,1));
+            leftDrive.setPower(Math.pow(leftPower, 1));
+            rightDrive.setPower(Math.pow(rightPower,1));
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());

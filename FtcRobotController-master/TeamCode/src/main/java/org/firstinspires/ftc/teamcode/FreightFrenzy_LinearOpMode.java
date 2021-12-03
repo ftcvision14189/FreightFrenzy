@@ -126,16 +126,16 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
 
             if(gamepad1.a){
                 Carousel.setPower(1);
-                //Carousel.setPower(deltaSeconds*1);
+                //Carousel.setPower(deltaSeconds*1);6  -----------------------------------------------------------------------------
             }else if(gamepad1.b){
                 Carousel.setPower(-1);
             }else{
                 Carousel.setPower(0);
             }
             if(gamepad1.dpad_up){
-                Feeder.setPower(1) ;
+                Feeder.setPower(-1) ;
             }else if(gamepad1.dpad_down){
-                Feeder.setPower(-1);
+                Feeder.setPower(1);
             }else{
                 Feeder.setPower(0);
             }
