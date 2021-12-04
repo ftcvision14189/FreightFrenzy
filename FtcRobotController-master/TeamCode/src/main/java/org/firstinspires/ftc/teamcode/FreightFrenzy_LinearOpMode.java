@@ -66,6 +66,28 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
     private DcMotor Feeder = null;
     private DcMotor Carousel = null;
 
+    // Some Auto Commands
+    void motorPower(float power){
+        frontLeftDrive.setPower(power);
+        frontRightDrive.setPower(power);
+        backLeftDrive.setPower(power);
+        backRightDrive.setPower(power);
+    }
+
+    void driveTime(float power, float timeInSeconds) {
+        motorPower(power);
+        sleep((int)(timeInSeconds * 1000));
+        if (power > 0) {
+            motorPower(-0.01f);
+        } else if (power < 0) {
+            motorPower(0.01f);
+        } else {
+            // do nothing because power is already 0
+        }
+        sleep(500);
+        motorPower(0);
+    }
+
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -112,11 +134,11 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
                 DtDirection = !DtDirection;
             }
             if(DtDirection) {
-                 drive = (gamepad1.left_trigger - gamepad1.right_trigger)*0.8f;
-                 turn = -gamepad1.right_stick_x/1.5;
+                 drive = (gamepad1.left_trigger - gamepad1.right_trigger)*0.65f;
+                 turn = -gamepad1.left_stick_x/1.25;
             }else{
-                 drive = (-gamepad1.right_trigger + gamepad1.left_trigger)*0.8f;
-                 turn = -gamepad1.right_stick_x/1.5;
+                 drive = (-gamepad1.right_trigger + gamepad1.left_trigger)*0.65f;
+                 turn = -gamepad1.left_stick_x/1.25;
             }
                 leftPower = Range.clip(drive + turn, -1.0, 1.0);
                 rightPower = Range.clip(drive - turn, -1.0, 1.0);
@@ -129,7 +151,15 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
                 //Carousel.setPower(deltaSeconds*1);6  -----------------------------------------------------------------------------
             }else if(gamepad1.b){
                 Carousel.setPower(-1);
-            }else{
+            } else if(gamepad1.x) {
+                driveTime(-0.5f, 0.12f); // ~4 in
+                Carousel.setPower(1);
+                sleep(2100);
+                Carousel.setPower(0);
+                driveTime(0.5f, 0.12f); // ~4 in
+            }
+
+            else{
                 Carousel.setPower(0);
             }
             if(gamepad1.dpad_up){
