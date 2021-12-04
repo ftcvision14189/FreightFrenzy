@@ -225,18 +225,18 @@ public class FreightFrenzy_BlueCarouselStorage extends LinearOpMode{
         gyroTurn(motorPower * 0.75f, 83, "Right");
         driveTime(motorPower, 0.555f + secOffset); // 18 in
         gyroTurn(motorPower * 0.75f, 45, "Right");
-        driveTime(motorPower, 0.401f + secOffset); // 13 in
+        driveTime(motorPower, 0.555f + secOffset); // 18 in
         Carousel.setPower(1);
         motorPower(0.1f);
         sleep(4000);
         motorPower(0.0f);
         Carousel.setPower(0);
         driveTime(-motorPower, 0.185f + secOffset); // 6 in
-        gyroTurn(motorPower * 0.75f, 28, "Right");
-        driveTime(-motorPower, 0.648f + secOffset); // 21 in
-        gyroTurn(motorPower * 0.75f, 170, "Left");
-        driveTime(-motorPower, 0.185f + secOffset); // 6 in
-        Feeder.setPower(-.5);
+        gyroTurn(motorPower * 0.75f, 35, "Right");
+        driveTime(-motorPower, 0.540f + secOffset); // 17.5 in
+        //gyroTurn(motorPower * 0.75f, 170, "Left");
+        //driveTime(-motorPower, 0.185f + secOffset); // 6 in
+        Feeder.setPower(0.5);
         sleep(4000);
         Feeder.setPower(0);
     }

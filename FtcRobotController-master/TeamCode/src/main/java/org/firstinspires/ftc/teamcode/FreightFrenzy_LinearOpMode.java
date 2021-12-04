@@ -66,6 +66,8 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
     private DcMotor Feeder = null;
     private DcMotor Carousel = null;
 
+    private boolean isBlueSide = true;
+
     // Some Auto Commands
     void motorPower(float power){
         frontLeftDrive.setPower(power);
@@ -130,15 +132,15 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
 
             // POV Mode uses left stick to go forward, and right stick to turn.
             // - This uses basic math to combine motions and is easier to drive straight.
-            if(gamepad1.left_stick_button) {
+            if (gamepad1.left_stick_button) {
                 DtDirection = !DtDirection;
             }
-            if(DtDirection) {
+            if (DtDirection) {
                  drive = (gamepad1.left_trigger - gamepad1.right_trigger)*0.65f;
-                 turn = -gamepad1.left_stick_x/1.25;
-            }else{
+                 turn = -gamepad1.right_stick_x/1.25;
+            } else {
                  drive = (-gamepad1.right_trigger + gamepad1.left_trigger)*0.65f;
-                 turn = -gamepad1.left_stick_x/1.25;
+                 turn = -gamepad1.right_stick_x/1.25;
             }
                 leftPower = Range.clip(drive + turn, -1.0, 1.0);
                 rightPower = Range.clip(drive - turn, -1.0, 1.0);
@@ -146,20 +148,25 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
             //long endTimer = System.currentTimeMillis() - startTimer;
             //float deltaSeconds = endTimer / 1000.0f;
 
-            if(gamepad1.a){
-                Carousel.setPower(1);
+            if(gamepad1.x){
+                if (isBlueSide) {
+                    Carousel.setPower(1);
+                    sleep(1800);
+                    Carousel.setPower(0.0f);
+                }
+                if (!isBlueSide) {
+                    Carousel.setPower(-1);
+                    sleep(1800);
+                    Carousel.setPower(0.0f);
+                }
                 //Carousel.setPower(deltaSeconds*1);6  -----------------------------------------------------------------------------
-            }else if(gamepad1.b){
-                Carousel.setPower(-1);
-            } else if(gamepad1.x) {
-                driveTime(-0.5f, 0.12f); // ~4 in
+            } else if(gamepad1.y) {
+                isBlueSide = !isBlueSide;
+            } else if (gamepad1.a) {
                 Carousel.setPower(1);
-                sleep(2100);
-                Carousel.setPower(0);
-                driveTime(0.5f, 0.12f); // ~4 in
-            }
-
-            else{
+            } else if (gamepad1.b) {
+                Carousel.setPower(-1);
+            } else{
                 Carousel.setPower(0);
             }
             if(gamepad1.dpad_up){
