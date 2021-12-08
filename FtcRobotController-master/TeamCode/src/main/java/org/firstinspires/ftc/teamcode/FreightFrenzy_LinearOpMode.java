@@ -142,8 +142,15 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
                  drive = (-gamepad1.right_trigger + gamepad1.left_trigger)*0.65f;
                  turn = -gamepad1.right_stick_x/1.25;
             }
-                leftPower = Range.clip(drive + turn, -1.0, 1.0);
-                rightPower = Range.clip(drive - turn, -1.0, 1.0);
+            leftPower = Range.clip(drive + turn, -1.0, 1.0);
+            rightPower = Range.clip(drive - turn, -1.0, 1.0);
+
+            // Send calculated power to wheels
+            backLeftDrive.setPower(java.lang.Math.pow(leftPower - gamepad1.left_stick_y/3, 1));
+            backRightDrive.setPower(java.lang.Math.pow(rightPower - gamepad1.left_stick_y/3,1));
+            frontLeftDrive.setPower(java.lang.Math.pow(leftPower - gamepad1.left_stick_y/1.25,1));
+            frontRightDrive.setPower(java.lang.Math.pow(rightPower - gamepad1.left_stick_y/1.25,1));
+
 
             //long endTimer = System.currentTimeMillis() - startTimer;
             //float deltaSeconds = endTimer / 1000.0f;
@@ -159,7 +166,7 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
                     sleep(1800);
                     Carousel.setPower(0.0f);
                 }
-                //Carousel.setPower(deltaSeconds*1);6  -----------------------------------------------------------------------------
+                //Carousel.setPower(deltaSeconds*1);
             } else if(gamepad1.y) {
                 isBlueSide = !isBlueSide;
             } else if (gamepad1.a) {
@@ -177,17 +184,27 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
                 Feeder.setPower(0);
             }
 
+            if(gamepad1.left_bumper){
+                backLeftDrive.setPower(.5);
+                backRightDrive.setPower(.5);
+                frontLeftDrive.setPower(.7f);
+                frontRightDrive.setPower(.7f);
+                sleep(380);
+                backLeftDrive.setPower(-.2f);
+                backRightDrive.setPower(-.2f);
+                frontLeftDrive.setPower(-.2f);
+                frontRightDrive.setPower(-.2f);
+                sleep(400);
+                backLeftDrive.setPower(0);
+                backRightDrive.setPower(0);
+                frontLeftDrive.setPower(0);
+                frontRightDrive.setPower(0);
+            }
+
             // Tank Mode uses one stick to control each wheel.
             // - This requires no math, but it is hard to drive forward slowly and keep straight.
             // leftPower  = -gamepad1.left_stick_y ;
             // rightPower = -gamepad1.right_stick_y ;
-
-            // Send calculated power to wheels
-
-            backLeftDrive.setPower(java.lang.Math.pow(leftPower, 1));
-            backRightDrive.setPower(java.lang.Math.pow(rightPower,1));
-            frontLeftDrive.setPower(java.lang.Math.pow(leftPower,1));
-            frontRightDrive.setPower(java.lang.Math.pow(rightPower,1));
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
