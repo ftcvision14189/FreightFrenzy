@@ -26,6 +26,11 @@ public class FreightFrenzy_BlueCarouselStorage extends LinearOpMode{
     private DcMotor Feeder = null;
     private DcMotor Carousel = null;
 
+    // Outside variables
+    private float PI = 3.14159265359f;
+    private float DIAMETER_IN_INCHES = 6.0f;
+    private float WHEEL_CIRCUMFERENCE = 2.0f * PI * (DIAMETER_IN_INCHES / 2.0f);
+
     Orientation angles;
 
     int inchesToEncoder(float inches){
@@ -67,6 +72,28 @@ public class FreightFrenzy_BlueCarouselStorage extends LinearOpMode{
         frontRightDrive.setPower(power);
         backLeftDrive.setPower(power);
         backRightDrive.setPower(power);
+    }
+    void motorPower_Left(float power) {
+        frontLeftDrive.setPower(power);
+        backLeftDrive.setPower(power);
+    }
+    void motorPower_Right(float power) {
+        frontRightDrive.setPower(power);
+        backRightDrive.setPower(power);
+    }
+
+    void tankDrive(float power, float rotL, float rotR) {
+        float timeL = abs(rotL) * WHEEL_CIRCUMFERENCE / (64.84f * power) * 1000.0f;
+        float timeR = abs(rotR) * WHEEL_CIRCUMFERENCE / (64.84f * power) * 1000.0f;
+        float avgTime = (timeL + timeR) / 2.0f;
+        float speedL = (rotL * WHEEL_CIRCUMFERENCE) / avgTime;
+        float speedR = (rotR * WHEEL_CIRCUMFERENCE) / avgTime;
+        float powerL = speedL / 64.84f * 1000;
+        float powerR = speedR / 64.84f * 1000;
+        motorPower_Left(powerL);
+        motorPower_Right(powerR);
+        sleep((int)avgTime);
+        motorPower(0.0f);
     }
 
     void driveTime(float power, float timeInSeconds) {
@@ -236,9 +263,9 @@ public class FreightFrenzy_BlueCarouselStorage extends LinearOpMode{
         driveTime(-motorPower, 0.540f + secOffset); // 17.5 in
         //gyroTurn(motorPower * 0.75f, 170, "Left");
         //driveTime(-motorPower, 0.185f + secOffset); // 6 in
-        Feeder.setPower(0.5);
-        sleep(4000);
-        Feeder.setPower(0);
+        //Feeder.setPower(0.5);
+        //sleep(4000);
+        //Feeder.setPower(0);
     }
 }
 

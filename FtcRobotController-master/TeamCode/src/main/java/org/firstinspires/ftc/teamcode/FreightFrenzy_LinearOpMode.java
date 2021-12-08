@@ -167,29 +167,28 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
                     Carousel.setPower(0.0f);
                 }
                 //Carousel.setPower(deltaSeconds*1);
-            } else if(gamepad1.y) {
+            } else if (gamepad1.y) {
                 isBlueSide = !isBlueSide;
             } else if (gamepad1.a) {
                 Carousel.setPower(1);
             } else if (gamepad1.b) {
                 Carousel.setPower(-1);
-            } else{
+            } else {
                 Carousel.setPower(0);
             }
-            if(gamepad1.dpad_up){
+            if (gamepad1.dpad_up) {
                 Feeder.setPower(-1) ;
-            }else if(gamepad1.dpad_down){
+            } else if (gamepad1.dpad_down) {
                 Feeder.setPower(1);
-            }else{
+            } else {
                 Feeder.setPower(0);
             }
-
-            if(gamepad1.left_bumper){
+            if (gamepad1.left_bumper) {
                 backLeftDrive.setPower(.5);
                 backRightDrive.setPower(.5);
                 frontLeftDrive.setPower(.7f);
                 frontRightDrive.setPower(.7f);
-                sleep(380);
+                sleep(350);
                 backLeftDrive.setPower(-.2f);
                 backRightDrive.setPower(-.2f);
                 frontLeftDrive.setPower(-.2f);
@@ -199,6 +198,10 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
                 backRightDrive.setPower(0);
                 frontLeftDrive.setPower(0);
                 frontRightDrive.setPower(0);
+            } else if (gamepad1.ps) {
+                motorPower(-1.0f);
+                sleep(1000);
+                motorPower(0.0f);
             }
 
             // Tank Mode uses one stick to control each wheel.

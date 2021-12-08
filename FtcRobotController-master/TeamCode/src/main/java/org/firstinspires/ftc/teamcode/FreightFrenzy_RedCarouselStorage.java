@@ -288,9 +288,9 @@ public class FreightFrenzy_RedCarouselStorage extends LinearOpMode{
         driveTime(-motorPower, 0.69f + secOffset); // 17.5 in
         //gyroTurn(motorPower * 0.75f, 170, "Left");
         //driveTime(-motorPower, 0.185f + secOffset); // 6 in
-        Feeder.setPower(0.5);
-        sleep(4000);
-        Feeder.setPower(0);
+        //Feeder.setPower(0.5);
+        //sleep(4000);
+        //Feeder.setPower(0);
 
 
     }
