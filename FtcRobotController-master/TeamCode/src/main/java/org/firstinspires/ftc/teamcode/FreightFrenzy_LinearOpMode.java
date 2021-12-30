@@ -75,6 +75,29 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
         backLeftDrive.setPower(power);
         backRightDrive.setPower(power);
     }
+    void resetMotors() {
+        frontLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backLeftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+    }
+
+    void teleOpMotors() {
+        frontLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        frontRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backLeftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        backRightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    }
+
+    void motorMove(){
+        frontLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        frontRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backLeftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        backRightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        while(frontLeftDrive.isBusy() || frontRightDrive.isBusy() || backLeftDrive.isBusy() || backRightDrive.isBusy()){
+            // Do Nothing
+        }
+    }
 
     void driveTime(float power, float timeInSeconds) {
         motorPower(power);
@@ -184,20 +207,23 @@ public class FreightFrenzy_LinearOpMode extends LinearOpMode {
                 Feeder.setPower(0);
             }
             if (gamepad1.left_bumper) {
-                backLeftDrive.setPower(.5);
-                backRightDrive.setPower(.5);
-                frontLeftDrive.setPower(.7f);
-                frontRightDrive.setPower(.7f);
-                sleep(350);
-                backLeftDrive.setPower(-.2f);
-                backRightDrive.setPower(-.2f);
-                frontLeftDrive.setPower(-.2f);
-                frontRightDrive.setPower(-.2f);
-                sleep(400);
-                backLeftDrive.setPower(0);
-                backRightDrive.setPower(0);
-                frontLeftDrive.setPower(0);
-                frontRightDrive.setPower(0);
+                resetMotors();
+                motorPower(.125f);
+                int bumpDistance = 235;
+                frontLeftDrive.setTargetPosition(bumpDistance);
+                frontRightDrive.setTargetPosition(bumpDistance);
+                backLeftDrive.setTargetPosition(bumpDistance);
+                backRightDrive.setTargetPosition(bumpDistance);
+                motorMove();
+                resetMotors();
+                /*motorPower(-.1f);
+                bumpDistance = -15;
+                frontLeftDrive.setTargetPosition(bumpDistance);
+                frontRightDrive.setTargetPosition(bumpDistance);
+                backLeftDrive.setTargetPosition(bumpDistance);
+                backRightDrive.setTargetPosition(bumpDistance);*/
+                //motorMove();
+                teleOpMotors();
             } else if (gamepad1.ps) {
                 motorPower(-1.0f);
                 sleep(1000);
