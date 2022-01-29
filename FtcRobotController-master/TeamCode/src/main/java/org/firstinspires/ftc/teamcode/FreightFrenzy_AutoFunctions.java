@@ -114,6 +114,36 @@ public class FreightFrenzy_AutoFunctions extends LinearOpMode{
         return(yaw);
     }
 
+    public double roll2() {
+        Quaternion quatangles = imu.getQuaternionOrientation();
+
+        double w = quatangles.w;
+        double x = quatangles.x;
+        double y = quatangles.y;
+        double z = quatangles.z;
+
+        double yaw = Math.atan2(2 * (w * z + x * y), 1 - (2 * (y * y + z * z))) * 180.0 / Math.PI;
+        if (yaw < 0) {
+            return (yaw + 360);
+        }
+        return (yaw);
+    }
+
+    public double roll3() {
+        Quaternion quatangles = imu.getQuaternionOrientation();
+
+        double w = quatangles.w;
+        double x = quatangles.x;
+        double y = quatangles.y;
+        double z = quatangles.z;
+
+        double yaw = Math.atan2(2 * (w * z + x * y), 1 - (2 * (y * y + z * z))) * 180.0 / Math.PI;
+        if (yaw > 0) {
+            return (yaw - 360);
+        }
+        return (yaw);
+    }
+
 
     /*
     Movement
@@ -135,18 +165,73 @@ public class FreightFrenzy_AutoFunctions extends LinearOpMode{
         telemetry.addLine()
                 .addData("Turn: ", new Func<String>() {
                     @Override public String value() {
-                        return(toString().valueOf(angles.firstAngle));
+                        return(toString().valueOf(roll()));
                     }
                 });
-        float start=angles.firstAngle;
+        double start= roll();
         do{
             angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             telemetry.update();
             motorPowerRight(-power);
             motorPowerLeft(power);
-        }while((angles.firstAngle-start)>=degrees && opModeIsActive());
+        }while((roll()-start)>=degrees && opModeIsActive());
         motorPower(0);
     }
+
+    void driveRL(float power, float degrees){
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        telemetry.addLine()
+                .addData("Turn: ", new Func<String>() {
+                    @Override public String value() {
+                        return(toString().valueOf(roll()));
+                    }
+                });
+        double start= roll();
+        do{
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            telemetry.update();
+            motorPowerRight(power);
+            motorPowerLeft(-power);
+        }while((roll()-start)<=degrees && opModeIsActive());
+        motorPower(0);
+    }
+
+    void driveRR2(float power, float degrees){
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        telemetry.addLine()
+                .addData("Turn: ", new Func<String>() {
+                    @Override public String value() {
+                        return(toString().valueOf(roll3()));
+                    }
+                });
+        double start= roll3();
+        do{
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            telemetry.update();
+            motorPowerRight(-power);
+            motorPowerLeft(power);
+        }while((roll3()-start)>=degrees && opModeIsActive());
+        motorPower(0);
+    }
+
+    void driveRL2(float power, float degrees){
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        telemetry.addLine()
+                .addData("Turn: ", new Func<String>() {
+                    @Override public String value() {
+                        return(toString().valueOf(roll2()));
+                    }
+                });
+        double start= roll2();
+        do{
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            telemetry.update();
+            motorPowerRight(power);
+            motorPowerLeft(-power);
+        }while((roll2()-start)<=degrees && opModeIsActive());
+        motorPower(0);
+    }
+
     /*static void driveTimeTurnLeft(float power, float timeInSeconds) {
         motorPowerLeft(-power);
         motorPowerRight(power);
@@ -222,6 +307,13 @@ public class FreightFrenzy_AutoFunctions extends LinearOpMode{
 
         waitForStart();
 
+        driveRR(0.5f, -90);
+        sleep(5000);
+        driveRR2(0.5f, -180);
+        sleep(2000);
+        driveRL2(0.5f, 180);
+        sleep(2000);
+        driveRL(0.5f, 90);
         //FreightFrenzy_AutoFunctions.noEncoder();
         //FreightFrenzy_AutoFunctions.driveF(-.2f, -6);
         /*driveRR(0.25f, -90);
@@ -230,17 +322,6 @@ public class FreightFrenzy_AutoFunctions extends LinearOpMode{
         sleep(4000);
         driveRR(0.25f, -120);
         sleep(2000);*/
-        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        telemetry.addLine()
-                .addData("Turn: ", new Func<String>() {
-                    @Override public String value() {
-                        return(toString().valueOf(roll()));
-                    }
-                });
-        while(opModeIsActive()){
-            roll();
-            telemetry.update();
-        }
     }
 }
 

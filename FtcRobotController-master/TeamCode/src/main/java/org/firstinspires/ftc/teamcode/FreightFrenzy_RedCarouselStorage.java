@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 
 import static java.lang.Math.abs;
 
@@ -26,11 +27,16 @@ public class FreightFrenzy_RedCarouselStorage extends LinearOpMode{
     private DcMotor Feeder = null;
     private DcMotor Carousel = null;
 
+    // Outside variables
+    private float PI = 3.14159265359f;
+    private float DIAMETER_IN_INCHES = 6.0f;
+    private float WHEEL_CIRCUMFERENCE = 2.0f * PI * (DIAMETER_IN_INCHES / 2.0f);
+
     Orientation angles;
 
     int inchesToEncoder(float inches){
-        final double     COUNTS_PER_MOTOR_REV    = 751.8 ;    // eg: TETRIX Motor Encoder
-        final double     DRIVE_GEAR_REDUCTION    = 1.0 ;     // This is < 1.0 if geared UP
+        final double     COUNTS_PER_MOTOR_REV    = 384.5 ;    // eg: TETRIX Motor Encoder
+        final double     DRIVE_GEAR_REDUCTION    = 2 ;     // This is < 1.0 if geared UP
         final double     WHEEL_DIAMETER_INCHES   = 6 ;     // For figuring circumference
         final double     COUNTS_PER_INCH         = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
                 (WHEEL_DIAMETER_INCHES * 3.1415);
@@ -68,171 +74,160 @@ public class FreightFrenzy_RedCarouselStorage extends LinearOpMode{
         backLeftDrive.setPower(power);
         backRightDrive.setPower(power);
     }
-
-    void motorPowerLeft(float power){
+    void motorPower_Left(float power) {
         frontLeftDrive.setPower(power);
         backLeftDrive.setPower(power);
     }
-
-    void motorPowerRight(float power){
+    void motorPower_Right(float power) {
         frontRightDrive.setPower(power);
         backRightDrive.setPower(power);
     }
 
-    void driveTime(float power, float timeInSeconds) {
-        motorPower(power);
-        sleep((int)(timeInSeconds * 1000));
-        if (power > 0) {
-            motorPower(-0.01f);
-        } else if (power < 0) {
-            motorPower(0.01f);
-        } else {
-            // do nothing because power is already 0
-        }
-        sleep(500);
-        motorPower(0);
+    void tankDrive(float power, float rotL, float rotR) {
+        float timeL = abs(rotL) * WHEEL_CIRCUMFERENCE / (64.84f * power) * 1000.0f;
+        float timeR = abs(rotR) * WHEEL_CIRCUMFERENCE / (64.84f * power) * 1000.0f;
+        float avgTime = (timeL + timeR) / 2.0f;
+        float speedL = (rotL * WHEEL_CIRCUMFERENCE) / avgTime;
+        float speedR = (rotR * WHEEL_CIRCUMFERENCE) / avgTime;
+        float powerL = speedL / 64.84f * 1000;
+        float powerR = speedR / 64.84f * 1000;
+        motorPower_Left(powerL);
+        motorPower_Right(powerR);
+        sleep((int)avgTime);
+        motorPower(0.0f);
     }
 
-    void driveTimeTurnLeft(float power, float timeInSeconds) {
-        motorPowerLeft(-power);
-        motorPowerRight(power);
-        sleep((int)(timeInSeconds * 1000));
-        if (power > 0) {
-            motorPowerLeft(-0.01f);
-            motorPowerRight(0.01f);
-        } else if (power < 0) {
-            motorPowerLeft(0.01f);
-            motorPowerRight(-0.01f);
-        } else {
-            // do nothing because power is already 0
-        }
-        sleep(500);
-        motorPowerLeft(0);
-        motorPowerRight(0);
+    public double roll(){
+        Quaternion quatangles = imu.getQuaternionOrientation();
+
+        double w =quatangles.w;
+        double x = quatangles.x;
+        double y = quatangles.y;
+        double z = quatangles.z;
+
+        double yaw = Math.atan2(2*(w*z+x*y), 1 - (2*(y*y+z*z)))*180.0/Math.PI;
+
+        return(yaw);
     }
 
-    void driveTimeTurnRight(float power, float timeInSeconds) {
-        motorPowerLeft(power);
-        motorPowerRight(-power);
-        sleep((int)(timeInSeconds * 1000));
-        if (power > 0) {
-            motorPowerLeft(0.01f);
-            motorPowerRight(-0.01f);
-        } else if (power < 0) {
-            motorPowerLeft(-0.01f);
-            motorPowerRight(0.01f);
-        } else {
-            // do nothing because power is already 0
+    public double roll2() {
+        Quaternion quatangles = imu.getQuaternionOrientation();
+
+        double w = quatangles.w;
+        double x = quatangles.x;
+        double y = quatangles.y;
+        double z = quatangles.z;
+
+        double yaw = Math.atan2(2 * (w * z + x * y), 1 - (2 * (y * y + z * z))) * 180.0 / Math.PI;
+        if (yaw < 0) {
+            return (yaw + 360);
         }
-        sleep(500);
-        motorPowerLeft(0);
-        motorPowerRight(0);
+        return (yaw);
     }
+
+    public double roll3() {
+        Quaternion quatangles = imu.getQuaternionOrientation();
+
+        double w = quatangles.w;
+        double x = quatangles.x;
+        double y = quatangles.y;
+        double z = quatangles.z;
+
+        double yaw = Math.atan2(2 * (w * z + x * y), 1 - (2 * (y * y + z * z))) * 180.0 / Math.PI;
+        if (yaw > 0) {
+            return (yaw - 360);
+        }
+        return (yaw);
+    }
+
+
+    /*
+    Movement
+    */
+    //drives forwards using encoders
     void driveF(float power, int inches){ // Drive Forward
         resetMotors();
         motorPower(power);
-        /*int distance = inchesToEncoder(inches);
+        int distance = inchesToEncoder(inches);
         frontLeftDrive.setTargetPosition(distance);
         frontRightDrive.setTargetPosition(distance);
         backLeftDrive.setTargetPosition(distance);
-        backRightDrive.setTargetPosition(distance);*/
-        float inchesToTime = (float)(inches/32.42f);
-        driveTime(power, inchesToTime);
-        //motorMove();
+        backRightDrive.setTargetPosition(distance);
+        motorMove();
+        noEncoder();
     }
-
-    void gyroTurnRight (float power, float endAngle) {
+    void driveRR(float power, float degrees){
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-
-        frontLeftDrive.setPower(power);
-        frontRightDrive.setPower(-power);
-        backLeftDrive.setPower(power);
-        backRightDrive.setPower(-power);
-
-        sleep((long)(500 - (power * 30)));
-
         telemetry.addLine()
-                .addData("roll", new Func<String>() {
+                .addData("Turn: ", new Func<String>() {
                     @Override public String value() {
-                        return(toString().valueOf(angles.thirdAngle));
+                        return(toString().valueOf(roll()));
                     }
                 });
-        telemetry.addLine()
-                .addData("Pitch", new Func<String>() {
-                    @Override public String value() {
-                        return(toString().valueOf(angles.secondAngle));
-                    }
-                });
-        telemetry.addLine()
-                .addData("heading", new Func<String>() {
-                    @Override public String value() {
-                        return(toString().valueOf(angles.firstAngle));
-                    }
-                });
-
+        double start= roll();
         do{
-            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             telemetry.update();
-        }while(angles.firstAngle >= (endAngle) && opModeIsActive());
-
-        frontLeftDrive.setPower(0);
-        frontRightDrive.setPower(0);
-        backLeftDrive.setPower(0);
-        backRightDrive.setPower(0);
+            motorPower_Right(-power);
+            motorPower_Left(power);
+        }while((roll()-start)>=degrees && opModeIsActive());
+        motorPower(0);
     }
 
-    void gyroTurnLeft (float power, float endAngle) {
+    void driveRL(float power, float degrees){
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-
-        frontLeftDrive.setPower(-power);
-        frontRightDrive.setPower(power);
-        backLeftDrive.setPower(-power);
-        backRightDrive.setPower(power);
-
-        sleep((long)(500-(power*50)));
-
         telemetry.addLine()
-                .addData("Roll", new Func<String>() {
+                .addData("Turn: ", new Func<String>() {
                     @Override public String value() {
-                        return(toString().valueOf(angles.secondAngle));
+                        return(toString().valueOf(roll()));
                     }
                 });
+        double start= roll();
         do{
-            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             telemetry.update();
-        }while(angles.secondAngle <= (endAngle) && opModeIsActive());
-
-        frontLeftDrive.setPower(0);
-        frontRightDrive.setPower(0);
-        backLeftDrive.setPower(0);
-        backRightDrive.setPower(0);
+            motorPower_Right(power);
+            motorPower_Left(-power);
+        }while((roll()-start)<=degrees && opModeIsActive());
+        motorPower(0);
     }
 
-    void gyroTurn(float power, float degrees, String direction) {
+    void driveRR2(float power, float degrees){
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        float startAngle = angles.firstAngle;
-        float travelAngle = degrees;
-        if(direction.equals("Right")){
-            float endAngle = startAngle - travelAngle;
-            if (abs(endAngle) >= 180){
-                gyroTurnRight(power,-178);
-                gyroTurnRight(power, (endAngle + 360));
-            }
-            else if (0 < abs(endAngle)) {
-                gyroTurnRight(power, endAngle);
-            }
-
-        }else if(direction.equals("Left")){
-            float endAngle = angles.firstAngle + degrees;
-            if (abs(endAngle) >= 180){
-                gyroTurnLeft(power,178);
-                gyroTurnLeft(power, (endAngle - 360));
-            }
-            else if (0 < abs(endAngle)) {
-                gyroTurnLeft(power, (endAngle));
-            }
-        }
+        telemetry.addLine()
+                .addData("Turn: ", new Func<String>() {
+                    @Override public String value() {
+                        return(toString().valueOf(roll3()));
+                    }
+                });
+        double start= roll3();
+        do{
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            telemetry.update();
+            motorPower_Right(-power);
+            motorPower_Left(power);
+        }while((roll3()-start)>=degrees && opModeIsActive());
+        motorPower(0);
     }
+
+    void driveRL2(float power, float degrees){
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        telemetry.addLine()
+                .addData("Turn: ", new Func<String>() {
+                    @Override public String value() {
+                        return(toString().valueOf(roll2()));
+                    }
+                });
+        double start= roll2();
+        do{
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            telemetry.update();
+            motorPower_Right(power);
+            motorPower_Left(-power);
+        }while((roll2()-start)<=degrees && opModeIsActive());
+        motorPower(0);
+    }
+
 
     void powerTurn () {} // Complete later
 
@@ -262,36 +257,22 @@ public class FreightFrenzy_RedCarouselStorage extends LinearOpMode{
 
         waitForStart();
 
-
         // FORMULA for timInSeconds to Inches :
         // inches / 32.42 = timeInSeconds
         // Round to the nearest thousandth
 
-        //driveTimeTurnLeft(motorPower, 1.0f);
-
-
-        driveTime(motorPower, 0.370f + secOffset); // 12 in
-        //gyroTurn(-motorPower * 0.75f, 83, "Right");
-        driveTimeTurnLeft(motorPower, 0.7f);
-        driveTime(motorPower, 0.555f + secOffset); // 18 in
-        //gyroTurn(-motorPower * 0.75f, 45, "Right");
-        driveTimeTurnLeft(motorPower, 0.36f);
-        driveTime(motorPower, 0.432f + secOffset); // 14 in
-        Carousel.setPower(-1);
-        motorPower(0.1f);
-        sleep(4000);
-        motorPower(0.0f);
+        driveF(0.5f,12);
+        driveRL(0.5f, 90);
+        driveF(0.5f, 24);
+        driveRL(0.5f, 30);
+        Carousel.setPower(0.5f);
+        motorPower(0.2f);
+        sleep(5000);
         Carousel.setPower(0);
-        driveTime(-motorPower, 0.185f + secOffset); // 6 in
-        //gyroTurn(-motorPower * 0.75f, 35, "Right");
-        driveTimeTurnLeft(motorPower, 0.4f);
-        driveTime(-motorPower, 0.69f + secOffset); // 17.5 in
-        //gyroTurn(motorPower * 0.75f, 170, "Left");
-        //driveTime(-motorPower, 0.185f + secOffset); // 6 in
-        //Feeder.setPower(0.5);
-        //sleep(4000);
-        //Feeder.setPower(0);
-
+        resetMotors();
+        driveF(-0.5f, -6);
+        driveRL(0.5f, 40);
+        driveF(-0.5f, -18);
 
     }
 }

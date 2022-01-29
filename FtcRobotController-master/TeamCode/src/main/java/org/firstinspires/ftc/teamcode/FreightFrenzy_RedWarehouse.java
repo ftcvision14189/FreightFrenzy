@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static java.lang.Math.abs;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -14,11 +16,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 
-import static java.lang.Math.abs;
+@Autonomous(name="RedWarehouse", group="Auto")
 
-@Autonomous(name="BlueWarehouse", group="Auto")
-
-public class FreightFrenzy_BlueWarehouse extends LinearOpMode{
+public class FreightFrenzy_RedWarehouse extends LinearOpMode{
     BNO055IMU imu;
     private DcMotor backLeftDrive = null;
     private DcMotor backRightDrive = null;
@@ -267,7 +267,7 @@ public class FreightFrenzy_BlueWarehouse extends LinearOpMode{
         sleep(2000);
         Feeder.setPower(0);
         driveF(0.5f, 4);
-        driveRL(0.5f, 85);
+        driveRR(0.5f, -85);
         driveF(-0.5f, -55);
 
     }
